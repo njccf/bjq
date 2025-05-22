@@ -1,0 +1,98 @@
+.App {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.editor-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.editor-header {
+  background-color: #fff;
+  border-bottom: 1px solid #e8e8e8;
+  padding: 12px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.editor-content {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+}
+
+.editor-sidebar {
+  width: 250px;
+  background-color: #fff;
+  border-right: 1px solid #e8e8e8;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.editor-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.editor-toolbar {
+  background-color: #fff;
+  border-bottom: 1px solid #e8e8e8;
+  padding: 10px;
+}
+
+.editor-workspace {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+  background-color: #f8f8f8;
+}
+
+.editor-footer {
+  background-color: #fff;
+  border-top: 1px solid #e8e8e8;
+  padding: 12px 20px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* 微信风格的按钮 */
+.wx-btn {
+  background-color: var(--wx-green);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 16px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.wx-btn:hover {
+  background-color: #06ae56;
+}
+
+.wx-btn-secondary {
+  background-color: white;
+  color: var(--wx-black);
+  border: 1px solid #ddd;
+}
+
+.wx-btn-secondary:hover {
+  background-color: #f5f5f5;
+}
+
+/* 预览页面样式 */
+.preview-container {
+  max-width: 750px;
+  margin: 0 auto;
+  background-color: #fff;
+  min-height: 100vh;
+  padding: 20px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+} 

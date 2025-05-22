@@ -84,8 +84,16 @@ function Editor() {
       published: true
     };
 
+    // 保存到localStorage
     saveArticle(article);
-    navigate(`/preview/${article.id}`);
+
+    // 同时创建一个带有内容的URL
+    const encodedTitle = encodeURIComponent(title);
+    const encodedContent = encodeURIComponent(content);
+    const encodedDate = encodeURIComponent(article.createdAt);
+    
+    // 将文章内容编码到URL参数中
+    navigate(`/preview/${article.id}?title=${encodedTitle}&content=${encodedContent}&date=${encodedDate}`);
   };
 
   return (

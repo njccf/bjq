@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { getArticleById } from '../utils/storage';
 
 function Preview() {
   const { id } = useParams();
+  const location = useLocation();
   const navigate = useNavigate();
   const [article, setArticle] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -12,11 +13,39 @@ function Preview() {
 
   useEffect(() => {
     const fetchArticle = () => {
+      // 尝试从URL参数中获取文章内容
+      const searchParams = new URLSearchParams(location.search);
+      const titleFromURL = searchParams.get('title');
+      const contentFromURL = searchParams.get('content');
+      const dateFromURL = searchParams.get('date');
+
+      if (titleFromURL && contentFromURL) {
+        // 如果URL中有文章内容，则使用URL中的内容
+        setArticle({
+          id,
+          title: decodeURIComponent(titleFromURL),
+          content: decodeURIComponent(contentFromURL),
+          createdAt: dateFromURL ? decodeURIComponent(dateFromURL) : new Date().toISOString()
+        });
+        
+        // 设置完整的分享URL（包括参数）
+        setShareUrl(window.location.href);
+        setLoading(false);
+        return;
+      }
+
+      // 如果URL中没有内容，则从localStorage中获取
       const foundArticle = getArticleById(id);
       if (foundArticle) {
         setArticle(foundArticle);
-        // 生成分享链接 - 在实际部署时这将是真实的URL
-        setShareUrl(`${window.location.origin}/preview/${id}`);
+        
+        // 生成带有文章内容的分享链接
+        const encodedTitle = encodeURIComponent(foundArticle.title);
+        const encodedContent = encodeURIComponent(foundArticle.content);
+        const encodedDate = encodeURIComponent(foundArticle.createdAt);
+        const shareUrlWithParams = `${window.location.origin}/preview/${id}?title=${encodedTitle}&content=${encodedContent}&date=${encodedDate}`;
+        
+        setShareUrl(shareUrlWithParams);
       } else {
         alert('文章不存在或已被删除');
         navigate('/');
@@ -25,7 +54,7 @@ function Preview() {
     };
 
     fetchArticle();
-  }, [id, navigate]);
+  }, [id, navigate, location.search]);
 
   const handleCopyLink = () => {
     try {

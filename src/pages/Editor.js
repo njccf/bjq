@@ -19,6 +19,9 @@ function Editor() {
       handlers: {
         'insertSvg': () => setShowSvgUploader(true)
       }
+    },
+    clipboard: {
+      matchVisual: false
     }
   };
 
@@ -33,8 +36,14 @@ function Editor() {
   const handleSvgInsert = (svgCode) => {
     if (quillRef.current) {
       const editor = quillRef.current.getEditor();
-      const range = editor.getSelection();
-      editor.insertEmbed(range.index, 'html', svgCode);
+      const range = editor.getSelection(true);
+      if (range) {
+        editor.insertEmbed(range.index, 'html', svgCode);
+        editor.setSelection(range.index + 1);
+      } else {
+        editor.insertEmbed(0, 'html', svgCode);
+        editor.setSelection(1);
+      }
       setShowSvgUploader(false);
     }
   };
@@ -120,16 +129,18 @@ function Editor() {
               }}
             />
             
-            <ReactQuill
-              ref={quillRef}
-              theme="snow"
-              value={content}
-              onChange={setContent}
-              modules={modules}
-              formats={formats}
-              placeholder="请输入正文内容..."
-              style={{ height: 'calc(100% - 80px)' }}
-            />
+            <div className="quill-editor-container" style={{ height: 'calc(100% - 80px)' }}>
+              <ReactQuill
+                ref={quillRef}
+                theme="snow"
+                value={content}
+                onChange={setContent}
+                modules={modules}
+                formats={formats}
+                placeholder="请输入正文内容..."
+                style={{ height: '100%' }}
+              />
+            </div>
           </div>
         </div>
       </div>

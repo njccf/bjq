@@ -26,26 +26,53 @@ const contentStyle = {
 function SvgUploader({ onInsert, onClose }) {
   const [svgCode, setSvgCode] = useState('');
   const [error, setError] = useState('');
+  const [isProcessing, setIsProcessing] = useState(false);
+
+  const validateSvgCode = (code) => {
+    // 检查是否包含基本的SVG标签
+    if (!code.includes('<svg') || !code.includes('</svg>')) {
+      return false;
+    }
+    return true;
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    setIsProcessing(true);
     
     if (!svgCode.trim()) {
       setError('请输入SVG代码');
+      setIsProcessing(false);
       return;
     }
 
-    // 简单验证是否为SVG代码
-    if (!svgCode.includes('<svg') || !svgCode.includes('</svg>')) {
+    // 验证是否为SVG代码
+    if (!validateSvgCode(svgCode)) {
       setError('请输入有效的SVG代码');
+      setIsProcessing(false);
       return;
     }
 
-    onInsert(svgCode);
+    // 使用setTimeout确保UI能够更新
+    setTimeout(() => {
+      try {
+        onInsert(svgCode);
+      } catch (err) {
+        console.error('插入SVG时出错:', err);
+        setError('插入SVG时出错');
+      } finally {
+        setIsProcessing(false);
+      }
+    }, 100);
+  };
+
+  const handleSvgChange = (e) => {
+    setSvgCode(e.target.value);
+    setError('');
   };
 
   return (
-    <div style={modalStyle}>
+    <div style={modalStyle} onClick={(e) => e.target === e.currentTarget && onClose()}>
       <div style={contentStyle}>
         <h3 style={{ marginTop: 0 }}>插入SVG图像</h3>
         
@@ -57,10 +84,7 @@ function SvgUploader({ onInsert, onClose }) {
             <textarea
               id="svg-code"
               value={svgCode}
-              onChange={(e) => {
-                setSvgCode(e.target.value);
-                setError('');
-              }}
+              onChange={handleSvgChange}
               style={{
                 width: '100%',
                 height: '200px',
@@ -80,11 +104,16 @@ function SvgUploader({ onInsert, onClose }) {
               onClick={onClose}
               className="wx-btn wx-btn-secondary"
               style={{ marginRight: '10px' }}
+              disabled={isProcessing}
             >
               取消
             </button>
-            <button type="submit" className="wx-btn">
-              插入
+            <button 
+              type="submit" 
+              className="wx-btn"
+              disabled={isProcessing}
+            >
+              {isProcessing ? '处理中...' : '插入'}
             </button>
           </div>
         </form>

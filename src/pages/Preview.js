@@ -8,6 +8,7 @@ function Preview() {
   const [article, setArticle] = useState(null);
   const [loading, setLoading] = useState(true);
   const [shareUrl, setShareUrl] = useState('');
+  const [copySuccess, setCopySuccess] = useState(false);
 
   useEffect(() => {
     const fetchArticle = () => {
@@ -27,14 +28,24 @@ function Preview() {
   }, [id, navigate]);
 
   const handleCopyLink = () => {
-    navigator.clipboard.writeText(shareUrl)
-      .then(() => {
-        alert('链接已复制到剪贴板');
-      })
-      .catch(err => {
-        console.error('复制失败:', err);
-        alert('复制链接失败，请手动复制');
-      });
+    try {
+      // 使用临时DOM元素作为替代方法
+      const textArea = document.createElement("textarea");
+      textArea.value = shareUrl;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+      
+      // 显示成功消息
+      setCopySuccess(true);
+      setTimeout(() => setCopySuccess(false), 2000);
+      
+      alert('链接已复制到剪贴板');
+    } catch (err) {
+      console.error('复制失败:', err);
+      alert('复制链接失败，请手动复制: ' + shareUrl);
+    }
   };
 
   if (loading) {
@@ -53,7 +64,7 @@ function Preview() {
         </button>
         <div>
           <button className="wx-btn" onClick={handleCopyLink}>
-            复制分享链接
+            {copySuccess ? '已复制' : '复制分享链接'}
           </button>
         </div>
       </div>
